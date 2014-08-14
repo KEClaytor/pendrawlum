@@ -13,6 +13,9 @@ M2EN = 22
 M2A = 27
 M2B = 17
 
+M_FOR = (1, 0)
+M_REV = (0, 1)
+
 # Initalize the GPIO pins
 #  Set them to the OUTPUT mode
 #  Enable the motors, but turn them off
@@ -28,18 +31,14 @@ def initalize():
     return True
 
 # Write a given state to a motor
-def set_motor_state(motor, sa, sb):
-    if (sa in [0, 1]) and (sb in [0, 1]):
-        if motor == 1:
-            GPIO.output(M1A, sa)
-            GPIO.output(M1B, sb)
-        elif motor == 2:
-            GPIO.output(M2A, sa)
-            GPIO.output(M2B, sb)
-        return True
-    else:
-        print "Invalid signal to set_motor_state. sa/sb must be either 0 or 1."
-        return False
+def set_motor_state(motor, state):
+    if motor == 1:
+        GPIO.output(M1A, state[0])
+        GPIO.output(M1B, state[1])
+    elif motor == 2:
+        GPIO.output(M2A, state[0])
+        GPIO.output(M2B, state[1])
+    return True
         
 # The two useful motor commands
 # Motor 1 does the drawing, hence it needs a delta vector
@@ -49,35 +48,41 @@ def set_motor_state(motor, sa, sb):
 def step_lock(motor, step_time, direction):
     # Set the direction of the motor
     if direction == "for":
-        sa, sb = (1, 0)
+        state = M_FOR
     elif direction == "rev":
-        sa, sb = (0, 1)
+        state = M_REV
     else:
         print "Invalid direction in step_lock. Values may be 'for' and 'rev'."
         return False
 
     # With the options set, run the motor, wait and lock it.
-    set_motor_state(motor, sa, sb)
+    set_motor_state(motor, state)
     sleep(step_time)
-    set_motor_state(motor, 0, 0)
+    set_motor_state(motor, (0, 0))
     return True
 
 # Given a delta vector, drive the motor
-def draw_line(vector, pen_down_val, pen_up_val, duration):
-    pause_time = duration / length(vector)
-    current_state = vector[0]
+def get_motor_dirn(current_state, pen_down_val, pen_up_val):
     if current_state == pen_down_val:
-    
+        state = M_REV
+    else:
+        state = M_FOR
+    return state
+
+def draw_line(motor, vector, pen_down_val, pen_up_val, duration):
+    pause_time = duration / length(vector)
+    for elem in vector:
+        current_state = get_motor_dirn(elem, pen_down_val, pen_up_val)
+        set_motor_state(motor, current_state)
+        pause(pause_time)
 
 if __name__ == "__main__":
     initalize()
     print "Running motor debug mode."
-    print "Enabling motor 1."
     print "Cycling motor 1."
     step_lock(1, .5, 'for')
     step_lock(1, .5, 'rev')
-    print "Enabling motor 2."
+    print "Cycling motor 2."
     step_lock(2, .5, 'for')
     step_lock(2, .5, 'rev')
-    print "Cycling motor 2."
-    print "Disabling all motors."
+    print "Done"
