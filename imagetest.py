@@ -2,7 +2,7 @@
 #  and plot it out.
 
 import pygame
-import pendulo
+import pendrawlum
 
 if __name__ == "__main__":
     stormpng = pygame.image.load('stormtrooper.png')
@@ -10,5 +10,11 @@ if __name__ == "__main__":
     whiteval = numpy.amax(stormarr)
     blackval = numpy.amin(stormarr) 
 
+    # Half the period of the pendulum
+    $  (time for one swing from l->r or r->l, ie; one 'line')
+    half_period = 2.00
+    # How long to spend belaying the pen to the next line
+    belay_time = 0.1
     # And now send it to the write routine
-    pendulo.draw(stormarr, maxval, minval)
+    pendulo.draw(stormarr, whiteval, blackval, half_period, belay_time)
+
