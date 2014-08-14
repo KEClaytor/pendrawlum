@@ -16,6 +16,9 @@ M2B = 17
 M_FOR = (1, 0)
 M_REV = (0, 1)
 
+# Start swtich pin
+SPIN = 18
+
 # Initalize the GPIO pins
 #  Set them to the OUTPUT mode
 #  Enable the motors, but turn them off
@@ -28,6 +31,12 @@ def initalize():
         state = states[ii]
         GPIO.setup(pin, GPIO.OUT)
         GPIO.output(pin, state)
+    # Initalize our monitor pin - default is down
+    GPIO.setup(SPIN, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
+    return True
+
+def wait_for_start():
+    GPIO.wait_for_edge(SPIN, GPIO.FALLING)
     return True
 
 # Write a given state to a motor
