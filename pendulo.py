@@ -7,8 +7,11 @@ def draw(image, pen_down_val, pen_up_val, half_period, belay_time):
     for line in image:
         if alternate:
             line.reverse()
-        draw_line(1, line, pen_down_val, pen_up_val, half_period)
-        step_lock(2, belay_time, 'for')
+        motor.draw_line(1, line, pen_down_val, pen_up_val, half_period)
+        motor.step_lock(2, belay_time, 'rev')
+    # Return the motors to the off position
+    motor.step_lock(1, 0, 'for')
+    motor.step_lock(2, 0, 'for')
     return True
 
 if __name__ == "__main__":

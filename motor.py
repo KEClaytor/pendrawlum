@@ -70,11 +70,12 @@ def get_motor_dirn(current_state, pen_down_val, pen_up_val):
     return state
 
 def draw_line(motor, vector, pen_down_val, pen_up_val, duration):
-    pause_time = duration / length(vector)
+    pause_time = duration / len(vector)
     for elem in vector:
         current_state = get_motor_dirn(elem, pen_down_val, pen_up_val)
         set_motor_state(motor, current_state)
-        pause(pause_time)
+        sleep(pause_time)
+    return True
 
 if __name__ == "__main__":
     initalize()
