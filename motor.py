@@ -13,6 +13,7 @@ M2EN = 22
 M2A = 27
 M2B = 17
 
+M_OFF = (0, 0)
 M_FOR = (1, 0)
 M_REV = (0, 1)
 
@@ -35,7 +36,7 @@ def initalize():
     GPIO.setup(SPIN, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
     return True
 
-def wait_for_start():
+def wait_for_button():
     GPIO.wait_for_edge(SPIN, GPIO.FALLING)
     return True
 
