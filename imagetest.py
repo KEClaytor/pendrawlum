@@ -5,25 +5,17 @@ import pygame
 import numpy
 import pendulo
 
-def load_stormtrooper():
-    png = pygame.image.load('stormtrooper.png')
-    png = pygame.transform.rotate(stormpng, 90)
-    arr = pygame.surfarray.array2d(stormpng)
+def load_image(image_string):
+    png = pygame.image.load(image_string)
+    png = pygame.transform.rotate(png, 90)
+    arr = pygame.surfarray.array2d(png)
     whiteval = numpy.amin(arr)
     blackval = numpy.amax(arr) 
     return (arr, whiteval, blackval)
 
-def load_grid():
-    png = pygame.image.load('grid.png')
-    png = pygame.transform.rotate(stormpng, 90)
-    arr = pygame.surfarray.array2d(stormpng)
-    whiteval = numpy.amax(arr)
-    blackval = numpy.amin(arr) 
-    return (arr, whiteval, blackval)
-
 if __name__ == "__main__":
 
-    (imagearr, whiteval, blackval) = load_grid()
+    (imagearr, whiteval, blackval) = load_image('grid.png')
 
     # Half the period of the pendulum
     #  (time for one swing from l->r or r->l, ie; one 'line')

@@ -16,6 +16,7 @@ M2B = 17
 M_OFF = (0, 0)
 M_FOR = (1, 0)
 M_REV = (0, 1)
+M_LOC = (1, 1)
 
 # Start swtich pin
 SPIN = 18
@@ -36,8 +37,12 @@ def initalize():
     GPIO.setup(SPIN, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
     return True
 
-def wait_for_button():
-    GPIO.wait_for_edge(SPIN, GPIO.FALLING)
+# Kinda silly, but this way we don't have GPIO calls in other fcn's
+def wait_for_button(edge):
+    if edge == 'falling':
+        GPIO.wait_for_edge(SPIN, GPIO.FALLING)
+    else:
+        GPIO.wait_for_edge(SPIN, GPIO.RISING)
     return True
 
 # Write a given state to a motor
@@ -55,20 +60,11 @@ def set_motor_state(motor, state):
 # Motor 2 does the belaying. It steps and then locks
 
 # Step a motor and lock it
-def step_lock(motor, step_time, direction):
-    # Set the direction of the motor
-    if direction == "for":
-        state = M_FOR
-    elif direction == "rev":
-        state = M_REV
-    else:
-        print "Invalid direction in step_lock. Values may be 'for' and 'rev'."
-        return False
-
+def step_lock(motor, step_time, state):
     # With the options set, run the motor, wait and lock it.
     set_motor_state(motor, state)
     sleep(step_time)
-    set_motor_state(motor, (0, 0))
+    set_motor_state(motor, M_LOC)
     return True
 
 # Given a delta vector, drive the motor
@@ -91,9 +87,9 @@ if __name__ == "__main__":
     initalize()
     print "Running motor debug mode."
     print "Cycling motor 1."
-    step_lock(1, .5, 'for')
-    step_lock(1, .5, 'rev')
+    step_lock(1, .5, M_FOR)
+    step_lock(1, .5, M_REV)
     print "Cycling motor 2."
-    step_lock(2, .5, 'for')
-    step_lock(2, .5, 'rev')
+    step_lock(2, .5, M_FOR)
+    step_lock(2, .5, M_REV)
     print "Done"
