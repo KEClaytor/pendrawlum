@@ -1,48 +1,27 @@
 # Import the motor module and prepare to draw
+import pygame
+import numpy
 import motor
 
-def fake_draw_line(dummy_motor, line, pen_down_val, pen_up_val, half_period):
-    debug_string = ''
-    for elem in line:
-        if elem == pen_down_val:
-            debug_string += '#'
-        else:
-            debug_string += ' '
-    print debug_string
-
-def draw(image, pen_down_val, pen_up_val, half_period, total_belay_time):
-    motor.initalize()
-    alternate = False
-    pritn "Release button to start."
-    motor.wait_for_button('falling')
-    #(row, col) = image.shape()
-    # Adjust belay time based on how many lines we have
-    belay_time = total_belay_time / 1
-    for line in image:
-        if alternate:
-            line.reverse()
-        motor.draw_line(1, line, pen_down_val, pen_up_val, half_period)
-        motor.step_lock(2, belay_time, motor.M_FOR)
-        # Do some ASCII art so we can see how far we are
-        fake_draw_line(1, line, pen_down_val, pen_up_val, half_period)
-
-    # Lift up the pen and return the walker to start
-    motor.set_motor_state(1, motor.M_FOR)
-    # Rewind the motor until an interrupt on the switch
-    motor.set_motor_state(2, motor.M_REV)
-    print "Rewinding. Press button to stop."
-    motor.wait_for_button('rising')
-    motor.set_motor_state(2, motor.M_OFF)
-    return True
+# Return a black/white array for a file
+#  with the black/white values
+def load_image(image_string):
+    png = pygame.image.load(image_string)
+    png = pygame.transform.rotate(png, 90)
+    arr = pygame.surfarray.array2d(png)
+    whiteval = numpy.amin(arr)
+    blackval = numpy.amax(arr) 
+    return (arr, whiteval, blackval)
 
 if __name__ == "__main__":
-    print "Wrapper for motor controls."
-    print "TODO: Get fancy about the transforms."
-    motor.initalize()
-    print "Press button to rewind."
-    motor.wait_for_button('rising')
-    print "Release button to stop."
-    motor.set_motor_state(2, motor.M_REV)
-    motor.wait_for_button('rising')
-    motor.set_motor_state(2, motor.M_OFF)
+
+    (imagearr, whiteval, blackval) = load_image('grid.png')
+
+    # Half the period of the pendulum
+    #  (time for one swing from l->r or r->l, ie; one 'line')
+    half_period = 2.00 / 2.0
+    # How long to spend belaying the pen to the next line
+    belay_time = 0.1
+    # And now send it to the write routine
+    motor.draw(imagearr, whiteval, blackval, half_period, belay_time)
 
