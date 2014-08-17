@@ -92,30 +92,6 @@ def fake_draw_line(dummy_motor, line, pen_down_val, pen_up_val, half_period):
             debug_string += ' '
     print debug_string
 
-def draw(image, pen_down_val, pen_up_val, half_period, total_belay_time):
-    alternate = False
-    print "Release button to start."
-    wait_for_button('falling')
-    #(row, col) = image.shape()
-    # Adjust belay time based on how many lines we have
-    belay_time = total_belay_time / 1
-    for line in image:
-        if alternate:
-            line.reverse()
-        draw_line(1, line, pen_down_val, pen_up_val, half_period)
-        step_lock(2, belay_time, motor.M_FOR)
-        # Do some ASCII art so we can see how far we are
-        fake_draw_line(1, line, pen_down_val, pen_up_val, half_period)
-
-    # Lift up the pen and return the walker to start
-    set_motor_state(1, motor.M_FOR)
-    # Rewind the motor until an interrupt on the switch
-    set_motor_state(2, motor.M_REV)
-    print "Rewinding. Press button to stop."
-    wait_for_button('rising')
-    set_motor_state(2, motor.M_OFF)
-    return True
-
 def demo():
     print "Running motor debug mode."
     print "Cycling motor 1."
