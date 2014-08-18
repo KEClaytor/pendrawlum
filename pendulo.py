@@ -41,7 +41,8 @@ def draw(image, pen_down_val, pen_up_val, half_period, total_belay_time):
     # Adjust belay time based on how many lines we have
     belay_time = total_belay_time / 1
     for line in image:
-        wait_for_mouse(1)
+        wait_for_mouse(-5)
+        wait_for_mouse(5)
         #if alternate:
         #    line.reverse()
         motor.draw_line(1, line, pen_down_val, pen_up_val, half_period)
